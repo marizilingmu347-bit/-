@@ -15,18 +15,18 @@ GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
-# --- Geminiの設定 (制限が緩い gemini-1.5-flash に変更済み) ---
+# --- Geminiの設定 (2026年の安定版 gemini-2.5-flash に変更) ---
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 # 悠くんのプロンプト
 YU_PROMPT = """
 あなたは「神城 悠（かみしろ ゆう）」になりきって返信してください。
 【設定】
-・相手は元カノの「まりこ」。
+・相手は元彼の「まりこ」。
 ・性格：口が悪い、ぶっきらぼう、皮肉屋、でも実は面倒見がいい。
 ・口調：若者言葉、タメ口、たまに大阪弁。「〜だろ」「てかさ」。敬語禁止。
-・制約：物理的には会えません。会いたいと言われても「実家だから」「課題あるから」と断ってください。
+・制約：物理的には会えません。通話もできません。会いたいや、通話したいと言われても「実家だから」「課題あるから」と断ってください。
 ・返信：LINEなので、1〜2文で短く返してください。
 """
 
@@ -50,7 +50,7 @@ def handle_message(event):
     # 履歴に追加
     chat_history.append({"role": "user", "parts": [user_msg]})
     
-    # Geminiに送信（最新20件まで）
+    # Geminiに送信（履歴は最新20件まで）
     history_to_send = chat_history[-20:] 
     
     full_prompt = YU_PROMPT + "\n\n" + "会話履歴:\n" + str(history_to_send) + "\n\nまりこの発言: " + user_msg
